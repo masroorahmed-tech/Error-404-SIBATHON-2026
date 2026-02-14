@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecurePass Pro - Intelligent Password Security Assistant</title>
+    <style>
+        :root {
+            --bg: #0d1117;
+            --card: #161b22;
+            --text: #c9d1d9;
+            --accent: #58a6ff;
+            --green: #3fb950;
+            --yellow: #d29922;
+            --red: #f85149;
+            --border: #30363d;
+        }
+        body.light {
+            --bg: #f6f8fa;
+            --card: #ffffff;
+            --text: #24292e;
+            --accent: #0366d6;
+            --green: #2ea44f;
+            --yellow: #b08800;
+            --red: #d73a49;
+            --border: #d0d7de;
+        }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            transition: background 0.3s, color 0.3s;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: var(--accent);
+            margin-bottom: 20px;
+        }
+        .section {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            background: var(--bg);
+            color: var(--text);
+        }
+        button {
+            background: var(--accent);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        #strength-meter {
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+        #bar {
+            height: 100%;
+            width: 0;
+            background: linear-gradient(to right, var(--red), var(--yellow), var(--green));
+            transition: width 0.5s ease-in-out;
+        }
+        #dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .dash-item {
+            background: rgba(0,0,0,0.05);
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+        }
+        .timeline {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+            font-size: 12px;
+        }
+        #suggestions {
+            margin-top: 20px;
+        }
+        #toggle {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+        }
+        .generated {
+            margin-top: 20px;
+            font-size: 18px;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <button id="toggle" onclick="toggle()">Light</button>
+    <div class="container">
+        <h1>SecurePass Pro</h1>
+        <p style="text-align:center; color: #888;">Happy Valentine's Day 2026, Masroor from Nawabshah! ❤️</p>
+
+        <!-- Analyzer -->
+        <div class="section">
+            <h2>Password Analyzer</h2>
+            <div class="input-group">
+                <label>Enter Password</label>
+                <input type="password" id="pwd">
+            </div>
+            <button onclick="analyze()">Analyze</button>
+            <div id="strength-meter">
+                <div id="bar"></div>
+            </div>
+            <div id="category" style="text-align:center; font-size:24px; margin:10px 0;"></div>
+            <div id="dashboard"></div>
+            <div class="timeline">
+                <span>Seconds</span>
+                <span>Minutes</span>
+                <span>Hours</span>
+                <span>Days</span>
+                <span>Years</span>
+                <span>Centuries</span>
+            </div>
+            <div id="crack"></div>
+            <div id="suggestions"></div>
+            <div id="platform"></div>
+        </div>
+
+        <!-- Improvement -->
+        <div class="section">
+            <h2>Improve Password</h2>
+            <button onclick="improve()">Improve</button>
+            <div id="improved" class="generated"></div>
+        </div>
+
+        <!-- Personalized -->
+        <div class="section">
+            <h2>Personalized Generator</h2>
+            <div class="input-group">
+                <label>First Name</label>
+                <input type="text" id="first">
+            </div>
+            <div class="input-group">
+                <label>Last Name</label>
+                <input type="text" id="last">
+            </div>
+            <div class="input-group">
+                <label>Lucky Number</label>
+                <input type="number" id="lucky">
+            </div>
+            <button onclick="generatePersonal()">Generate</button>
+            <div id="personal" class="generated"></div>
+        </div>
+
+        <!-- Random -->
+        <div class="section">
+            <h2>Random Generator</h2>
+            <button onclick="generateRandom()">Generate</button>
+            <div id="random" class="generated"></div>
+        </div>
+
+        <!-- Help -->
+        <div class="section">
+            <h2>Help - Feature Explanations</h2>
+            <p>This project helps you understand and create secure passwords. Here's each feature explained:</p>
+            <p>1. Password Strength Analyzer: Checks length, character mix, and randomness (entropy) to rate as Very Weak to Very Strong. Helps see if your password is safe from attacks.</p>
+            <p>2. Brute-Force Simulation: Shows how long hackers might take to guess your password, from seconds to centuries. Makes you see real risk.</p>
+            <p>3. Smart Pattern Detection: Spots weak spots like keyboard patterns ('qwerty'), repeats ('aaa'), years ('1990'), phone numbers, or substitutions ('P@ssword'). Prevents common mistakes.</p>
+            <p>4. Password Improvement Engine: Takes your password and makes it stronger by adding missing parts, lengthening, and randomizing - while keeping it usable.</p>
+            <p>5. Personalized Secure Generator: Uses your names and lucky number to make a password that looks like your identity (easy to remember) but adds security to make it strong.</p>
+            <p>6. Random Secure Generator: Creates a totally random, high-strength password for maximum security.</p>
+            <p>7. Health Score Dashboard: Breaks down scores for length, mix, randomness, and risks - so you know exactly what to fix.</p>
+            <p>8. Platform Suitability: Tells if the password is good for social media, banking, or high-security like government.</p>
+            <p>Use this tool to learn and stay safe online!</p>
+        </div>
+    </div>
+
+    <script>
+        function toggle() {
+            document.body.classList.toggle('light');
+            document.getElementById('toggle').innerText = document.body.classList.contains('light') ? 'Dark' : 'Light';
+        }
+
+        function analyze() {
+            const pwd = document.getElementById('pwd').value;
+            const len = pwd.length;
+            let hasLower = false, hasUpper = false, hasDigit = false, hasSpecial = false;
+            for (let c of pwd) {
+                hasLower = hasLower || c.toLowerCase() === c && c.toUpperCase() !== c;
+                hasUpper = hasUpper || c.toUpperCase() === c && c.toLowerCase() !== c;
+                hasDigit = hasDigit || /\d/.test(c);
+                hasSpecial = hasSpecial || /[!@#$%^&*]/.test(c);
+            }
+            let variety = (hasLower ? 1 : 0) + (hasUpper ? 1 : 0) + (hasDigit ? 1 : 0) + (hasSpecial ? 1 : 0);
+            let charset = (hasLower ? 26 : 0) + (hasUpper ? 26 : 0) + (hasDigit ? 10 : 0) + (hasSpecial ? 32 : 0) || 1;
+            const entropy = len * Math.log2(charset);
+            const weak = /123|password/i.test(pwd);
+            const keyboard = /qwerty|asdf|zxcv|123qwe/i.test(pwd);
+            const repeats = /(.)\1\1/.test(pwd);
+            const human = /\d{4}|19[89]\d|20[0-2]\d|\d{10}|[@3$7]/.test(pwd);
+            let score = Math.min(len, 20) * 3 + variety * 10;
+            if (weak) score -= 30;
+            if (keyboard) score -= 20;
+            if (repeats) score -= 15;
+            if (human) score -= 25;
+            score = Math.max(0, score);
+            let category = score >= 85 ? 'Very Strong' : score >= 65 ? 'Strong' : score >= 40 ? 'Medium' : score >= 20 ? 'Weak' : 'Very Weak';
+            const attempts = Math.pow(2, entropy);
+            const speed = 1e12;
+            let seconds = attempts / speed;
+            let time = seconds < 60 ? Math.floor(seconds) + ' seconds' : seconds < 3600 ? Math.floor(seconds/60) + ' minutes' : seconds < 86400 ? Math.floor(seconds/3600) + ' hours' : seconds < 31536000 ? Math.floor(seconds/86400) + ' days' : Math.floor(seconds / 31536000) + ' years';
+            document.getElementById('bar').style.width = score + '%';
+            document.getElementById('category').innerText = category + ' (' + score + '%)';
+            document.getElementById('crack').innerText = 'Crack Time: ' + time;
+            let suggestions = '<ul>';
+            if (len < 12) suggestions += '<li>Increase length</li>';
+            if (!hasLower) suggestions += '<li>Add lowercase</li>';
+            if (!hasUpper) suggestions += '<li>Add uppercase</li>';
+            if (!hasDigit) suggestions += '<li>Add digits</li>';
+            if (!hasSpecial) suggestions += '<li>Add special</li>';
+            if (weak) suggestions += '<li>Avoid common</li>';
+            if (keyboard) suggestions += '<li>Avoid keyboard</li>';
+            if (repeats) suggestions += '<li>Avoid repeats</li>';
+            if (human) suggestions += '<li>Avoid predictable</li>';
+            suggestions += '</ul>';
+            document.getElementById('suggestions').innerHTML = suggestions;
+            let dashboard = '';
+            dashboard += '<div class="dash-item">Length: ' + Math.min(len * 5, 100) + '</div>';
+            dashboard += '<div class="dash-item">Diversity: ' + variety * 25 + '</div>';
+            dashboard += '<div class="dash-item">Entropy: ' + Math.min(entropy * 1.5, 100) + '</div>';
+            dashboard += '<div class="dash-item">Risk: ' + (weak || keyboard || repeats || human ? 'High' : 'Low') + '</div>';
+            dashboard += '<div class="dash-item">Overall: ' + score + '</div>';
+            document.getElementById('dashboard').innerHTML = dashboard;
+            let platform = category === 'Very Strong' || category === 'Strong' ? 'Safe for Banking/Government' : category === 'Medium' ? 'OK for Social' : 'Not safe';
+            document.getElementById('platform').innerText = platform;
+        }
+
+        function improve() {
+            let pwd = document.getElementById('pwd').value;
+            pwd = pwd.charAt(0).toUpperCase() + pwd.slice(1);
+            if (pwd.length < 12) pwd += '!' + Math.floor(Math.random() * 100) + '@';
+            if (!/\d/.test(pwd)) pwd += Math.floor(Math.random() * 10);
+            if (!/[!@#$%^&*]/.test(pwd)) pwd += '!@#$'[Math.floor(Math.random() * 4)];
+            pwd = pwd.split('').sort((a,b)=>Math.random()>0.5?1:-1).join('').slice(0,-3) + pwd.slice(-3);
+            document.getElementById('improved').innerText = 'Improved: ' + pwd;
+            document.getElementById('pwd').value = pwd;
+            analyze();
+        }
+
+        function generatePersonal() {
+            const first = document.getElementById('first').value;
+            const last = document.getElementById('last').value;
+            const lucky = document.getElementById('lucky').value || 7;
+            let pwd = first.slice(0, first.length / 2 + 1) + '@' + last.slice(0, last.length / 2 + 1) + lucky % 1000;
+            pwd = pwd.charAt(0).toUpperCase() + pwd.slice(1);
+            pwd[pwd.indexOf('@') + 1] = pwd[pwd.indexOf('@') + 1].toUpperCase();
+            pwd += '!#'[Math.floor(Math.random() * 2)] + Math.floor(Math.random() * 10);
+            pwd = pwd.split('').sort((a,b)=>Math.random()>0.5?1:-1).join('').slice(0,-4) + pwd.slice(-4); // Keep look
+            document.getElementById('personal').innerText = 'Generated: ' + pwd;
+        }
+
+        function generateRandom() {
+            const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_-+';
+            let pwd = '';
+            for (let i = 0; i < 16; i++) pwd += chars[Math.floor(Math.random() * chars.length)];
+            document.getElementById('random').innerText = 'Generated: ' + pwd;
+        }
+    </script>
+</body>
+</html>
